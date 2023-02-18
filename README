@@ -1,0 +1,112 @@
+Limbaj folosit: C++
+    Am folosit C++ pentru a avea acces la clasele string si vector, ce reduc numarul
+de parametrii ce trebuie dati metodelor.
+
+Biblioteci externe folosite: 
+        -nlohmann::json
+    Am folosit aceasta biblioteca intrucat permite crearea usoara de obiecte JSON simple
+si transformarea lor in string-uri
+
+Detalii implementare:
+
+    Cererile sunt mai intai create folosind metodele din requests.cpp, apoi trimise.
+    String-urile si vectorii sunt trimisi prin referinta metodelor.
+
+    Clasa LibraryServer este folosita pentru a encapsula toate interactiunile cu serverul.
+
+    Inainte de fiecare interactiune cu serverul, redeschid conexiunea.
+
+Utilizare client:
+
+    - creare executabil: make client
+    - rulare executabil: ./client
+
+    - register 
+        * inregistreaza un nou utilizator la server
+        * ofera prompt pentru <username> si <password>
+        - raspunsuri posibile:
+            * 200: OK 
+                - inregistrare cu succes
+            * 400: Username taken!
+                - nume de utilizator deja folosit
+    
+    - login
+        * autentifica un utilizator
+        * ofera prompt pentru <username> si <password>
+        - raspunsuri posibile:
+            * 200: OK
+                - autentificare cu succes
+            * 204: Already logged in
+                - clientul este deja autentificat la server
+            * 400: Bad credentials
+                - nume sau parola gresita
+
+    - enter_library
+        * clientul incearca sa obtina un token de acces la biblioteca
+        - raspunsuri posibile:
+            * 200: OK
+                - clientul primeste un token JWT de acces
+            * 401: Not logged in
+                - clientul nu este autentificat
+
+    - get_books
+        * clientul incearca sa obtina o lista cu informatii sumare despre 
+        cartile din biblioteca 
+        * format lista: [ {"id":<number>, "title":<string>}]
+        - raspunsuri posibile:
+            * 200: OK
+                - clientul obtine si afiseaza lista
+            * 500: No access
+                - clientul nu are token de acces la biblioteca
+
+    - get_book
+        * clientul incearca sa obtina detaliile unei carti
+        * ofera prompt pentru <id>
+        * format date: {"title":<string>,
+                        "author":<string>,
+                        "publisher":<string>,
+                        "genre":<string>,
+                        "page_count":<number>}
+        - raspunsuri posibile:
+            * Error: id must be a number
+                - id invalid(trebuie sa fie un numar)
+            * 200: OK
+                - clientul obtine si afiseaza datele
+            * 404: Book <id> Not Found
+                - cartea cu id-ul dat nu exista in biblioteca
+            * 500: No access
+                - clientul nu are token de acces la biblioteca
+
+    - add_book 
+        * clientul incearca sa adauge o carte la biblioteca
+        * ofera prompt pentru <title>, <author>, <publisher>, 
+        <genre> si <page_count>
+        - raspunsuri posibile:
+            * Error: page_count must be a number 
+                - page_count invalid(trebuie sa fie un numar)
+            * 200: OK
+                - carte adugata cu succes
+            * 500: No access
+                - clientul nu are token de acces la biblioteca
+    
+    - delete_book
+        * clientul incearca sa stearga o carte din biblioteca
+        * ofera prompt pentru <id>
+        - raspunsuri posibile:
+            * Error: id must be a number
+                - id invalid(trebuie sa fie un numar)
+            * 200: OK
+                - carte e stearsa din biblioteca
+            * 404: Book <id> Not Found
+                - cartea cu id-ul dat nu exista in biblioteca
+            * 500: No access
+                - clientul nu are token de acces la biblioteca
+
+    - logout
+        * dezautentifica clientul si sterge tokenul de acces la biblioteca
+         - raspunsuri posibile:
+            * 200: OK
+                - clientul este dezautentificat cu succes
+            * 400: Not logged in
+                - clientul nu este autentificat
+        
